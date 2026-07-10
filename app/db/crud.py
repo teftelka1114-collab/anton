@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.db import models
 
+# ===== CATEGORY =====
 
 def get_all_categories(db: Session):
     return db.query(models.Category).all()
@@ -34,6 +35,7 @@ def delete_category(db: Session, category_id: int):
         return True
     return False
 
+# ===== BOOK =====
 
 def get_all_books(db: Session):
     return db.query(models.Book).all()
@@ -57,7 +59,7 @@ def create_book(db: Session, title: str, description: str, price: int, category_
     db.refresh(book)
     return book
 
-def update_book(db: Session, book_id: int, title: str = None, description: str = None, 
+def update_book(db: Session, book_id: int, title: str = None, description: str = None,
                 price: int = None, url: str = None, category_id: int = None):
     book = get_book_by_id(db, book_id)
     if book:

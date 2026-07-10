@@ -9,7 +9,7 @@ router = APIRouter(prefix="/books", tags=["Books"])
 
 @router.get("/", response_model=list[BookResponse])
 def get_books(
-    category_id: int | None = Query(None, description="Filter by category"),
+    category_id: int | None = Query(None, description="Filter by category ID"),
     db: Session = Depends(get_db)
 ):
     if category_id:
@@ -42,13 +42,13 @@ def update_book(book_id: int, book: BookUpdate, db: Session = Depends(get_db)):
     existing = crud.get_book_by_id(db, book_id)
     if not existing:
         raise HTTPException(status_code=404, detail="Book not found")
-    
-    if book.category_id:
+
+    if book.category_id is not None:
         category = crud.get_category_by_id(db, book.category_id)
         if not category:
             raise HTTPException(status_code=404, detail="Category not found")
         existing.category_id = book.category_id
-    
+
     if book.title is not None:
         existing.title = book.title
     if book.description is not None:
@@ -57,7 +57,7 @@ def update_book(book_id: int, book: BookUpdate, db: Session = Depends(get_db)):
         existing.price = book.price
     if book.url is not None:
         existing.url = book.url
-    
+
     db.commit()
     db.refresh(existing)
     return existing
