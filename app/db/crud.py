@@ -37,14 +37,9 @@ def delete_category(db: Session, category_id: int):
 
 # ===== BOOK =====
 
-def get_all_books(db: Session):
-    return db.query(models.Book).all()
 
 def get_book_by_id(db: Session, book_id: int):
     return db.query(models.Book).filter(models.Book.id == book_id).first()
-
-def get_books_by_category(db: Session, category_id: int):
-    return db.query(models.Book).filter(models.Book.category_id == category_id).all()
 
 def create_book(db: Session, title: str, description: str, price: int, category_id: int, url: str = ""):
     book = models.Book(
@@ -84,3 +79,8 @@ def delete_book(db: Session, book_id: int):
         db.commit()
         return True
     return False
+def get_books(db: Session, category_id: int = None):
+    query = db.query(models.Book)
+    if category_id is not None:
+        query = query.filter(models.Book.category_id == category_id)
+    return query.all()

@@ -27,11 +27,9 @@ def update_category(category_id: int, category: CategoryUpdate, db: Session = De
     existing = crud.get_category_by_id(db, category_id)
     if not existing:
         raise HTTPException(status_code=404, detail="Category not found")
-    if category.title:
-        existing.title = category.title
-        db.commit()
-        db.refresh(existing)
-    return existing
+    
+    updated = crud.update_category(db, category_id, category.title)
+    return updated
 
 @router.delete("/{category_id}", status_code=204)
 def delete_category(category_id: int, db: Session = Depends(get_db)):
