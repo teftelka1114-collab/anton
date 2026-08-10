@@ -9,9 +9,6 @@ def get_all_categories(db: Session):
 def get_category_by_id(db: Session, category_id: int):
     return db.query(models.Category).filter(models.Category.id == category_id).first()
 
-def get_category_by_title(db: Session, title: str):
-    return db.query(models.Category).filter(models.Category.title == title).first()
-
 def create_category(db: Session, title: str):
     category = models.Category(title=title)
     db.add(category)
@@ -84,3 +81,5 @@ def get_books(db: Session, category_id: int = None):
     if category_id is not None:
         query = query.filter(models.Book.category_id == category_id)
     return query.all()
+def get_category_by_title(db: Session, title: str):
+    return db.query(models.Category).filter(models.Category.title == title).first()

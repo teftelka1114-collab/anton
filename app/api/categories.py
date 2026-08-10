@@ -20,6 +20,9 @@ def get_category(category_id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=CategoryResponse, status_code=201)
 def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
+    existing = crud.get_category_by_title(db, category.title)
+    if existing:
+        raise HTTPException(status_code=400, detail="Category with this title already exists")
     return crud.create_category(db, category.title)
 
 @router.put("/{category_id}", response_model=CategoryResponse)
@@ -28,11 +31,24 @@ def update_category(category_id: int, category: CategoryUpdate, db: Session = De
     if not existing:
         raise HTTPException(status_code=404, detail="Category not found")
     
+    if category.title is None or category.title.strip() == "":
+        raise HTTPException(status_code=400, detail="Title cannot be empty")
+    
     updated = crud.update_category(db, category_id, category.title)
     return updated
 
 @router.delete("/{category_id}", status_code=204)
 def delete_category(category_id: int, db: Session = Depends(get_db)):
+    existing = crud.get_category_by_id(db, category_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    if existing.books:
+        raise HTTPException(
+            status_code=400, 
+            detail="Cannot delete category with existing books. Delete books first."
+        )
+    
     deleted = crud.delete_category(db, category_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Category not found")
