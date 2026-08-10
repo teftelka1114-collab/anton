@@ -2,6 +2,6 @@
 
 проект на Python.
 
-## Запуск (5-е задание)
+## Запуск
 ```bash
 python3 app/main.py
